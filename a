@@ -1,1 +1,1692 @@
-print("3")
+--loadstring(game:HttpGet'https://gist.githubusercontent.com/bobb52/08f6c646a71a0e606aaec8d2370b8a34/raw/09bcd68193803f74a81ff3f8480f46f800054eb0/ui%2520lib',true)()
+pcall(function()
+	game:GetService("CoreGui").ramGui:remove()
+	task.wait(2)
+end)
+
+getgenv().gui_open44 = "press"
+getgenv().gui44 = Enum.KeyCode.LeftControl --hold
+getgenv().select44 = Enum.KeyCode.E
+getgenv().color45 = Color3.fromRGB(252, 163, 181) --252, 163, 181
+
+getgenv().up44 = Enum.KeyCode.W
+getgenv().down44 = Enum.KeyCode.S
+getgenv().right44 = Enum.KeyCode.D
+getgenv().left44 = Enum.KeyCode.A
+
+getgenv().up45 = Enum.KeyCode.Up
+getgenv().down45 = Enum.KeyCode.Down
+getgenv().right45 = Enum.KeyCode.Right
+getgenv().left45 = Enum.KeyCode.Left
+
+getgenv().color44 = Color3.fromRGB(72, 72, 74) -- 27, 42, 53
+
+getgenv().color46 = Color3.fromRGB(45, 45, 45)
+
+local UI_input
+local binder_mode = false
+local binder_focus
+local dropdown_mode = false
+local dropdown_focus
+local current_selector
+local notification_table = {}
+local min, max = 0, 20000
+local highlight__vertical_tween_conflict_avoid
+local highlight__horizontal_tween_conflict_avoid
+local TweenService = game:GetService'TweenService'
+local UIS = game:GetService'UserInputService'
+	
+local screen = Instance.new'ScreenGui'
+screen.Parent = game.CoreGui
+screen.Enabled = true	--always enable for notification work
+screen.Name = 'ramGui'
+screen.IgnoreGuiInset = true
+--screen.ZIndexBehavior = 0 --Global -- 1 sibling
+
+local screen_X = screen.AbsoluteSize.X
+local screen_Y = screen.AbsoluteSize.Y
+print(screen_X, screen_Y)
+
+local frame1 = Instance.new'Frame'
+--frame1.Name = 'main'
+frame1.Parent = screen
+frame1.BackgroundColor3 = color44
+frame1.Transparency = 1
+frame1.BorderSizePixel = 0
+frame1.Size = UDim2.new(1, 0, 1, 0)
+frame1.Position = UDim2.new(0, 0, 0, 0)
+frame1.ZIndex = 0
+frame1.Visible = false
+
+local frame2 = Instance.new'Frame'
+--frame2.Name = 'info' -- line n highlight n details n text
+frame2.Parent = screen
+frame2.BackgroundColor3 = color44
+frame2.Transparency = 1
+frame2.BorderSizePixel = 0
+frame2.Size = UDim2.new(1, 0, 1, 0)
+frame2.Position = UDim2.new(0, 0, 0, 0)
+frame2.Visible = false
+
+local frame3 = Instance.new'Frame'
+--frame3.Name = 'notification'
+frame3.Parent = screen
+frame3.BackgroundColor3 = color44
+frame3.Transparency = 1
+frame3.BorderSizePixel = 0
+frame3.Size = UDim2.new(1, 0, 1, 0)
+frame3.Position = UDim2.new(0, 0, 0, 0)
+
+-- local default_details = Instance.new'Frame'
+-- default_details.Parent = frame2
+-- default_details.BackgroundColor3 = color46
+-- default_details.Transparency = 0.15
+-- default_details.BorderSizePixel = 0
+-- default_details.Size = UDim2.new(0.2, 0, 0.15, 0)
+-- default_details.Position = UDim2.new(0.03, 0, 0.85, 0)
+-- default_details.ZIndex = 10
+
+local details = Instance.new'Frame'
+details.Parent = frame2
+details.BackgroundColor3 = color46
+details.Transparency = 0.15
+details.BorderSizePixel = 0
+details.Size = UDim2.new(1, 0, 0.15, 0) --0.67 , 0 ,0.15, 0
+details.Position = UDim2.new(0, 0, 0.85, 0) -- 0.26
+details.ZIndex = 10
+
+local details_txt1 = Instance.new'TextLabel'
+details_txt1.Parent = frame2
+details_txt1.BackgroundTransparency = 1
+details_txt1.Position = UDim2.new(0.275, 0, 0.85, 0)
+details_txt1.Size = UDim2.new(0, 200, 0, 50)
+details_txt1.Font = Enum.Font.ArialBold
+details_txt1.Text = ''
+details_txt1.TextColor3 = color45
+details_txt1.TextSize = 18
+details_txt1.TextXAlignment = Enum.TextXAlignment.Left
+details_txt1.ZIndex = 10
+
+local details_txt2 = Instance.new'TextLabel'
+details_txt2.Parent = frame2
+details_txt2.BackgroundTransparency = 1
+details_txt2.Position = UDim2.new(0.275, 0, 0.92, 0)
+details_txt2.Size = UDim2.new(0, 200, 0, 50)
+details_txt2.Font = Enum.Font.ArialBold
+details_txt2.Text = '' -- support 4 \n
+details_txt2.TextColor3 = color45
+details_txt2.TextSize = 15
+details_txt2.TextXAlignment = Enum.TextXAlignment.Left
+details_txt2.ZIndex = 10
+
+local details_txt3 = Instance.new'TextLabel'
+details_txt3.Parent = frame2
+details_txt3.BackgroundTransparency = 1
+details_txt3.Position = UDim2.new(0.045, 0, 0.92, 0)
+details_txt3.Size = UDim2.new(0, 200, 0, 50)
+details_txt3.Font = Enum.Font.ArialBold
+details_txt3.Text = "Support Mouse and Keyboard\n<u>WASD</u>, <u>Arrows key</u>, <u>"..string.sub(tostring(getgenv().select44), 14).."</u> to slect\n<u>"..string.sub(tostring(getgenv().gui44), 14).."</u> to Open/Close" -- support 4 \n
+details_txt3.TextColor3 = color45
+details_txt3.TextSize = 15
+details_txt3.TextXAlignment = Enum.TextXAlignment.Left
+details_txt3.ZIndex = 10
+details_txt3.RichText = true
+
+local highlight_horizontal = Instance.new'Frame'
+highlight_horizontal.Parent = frame2
+highlight_horizontal.BackgroundColor3 = color45
+highlight_horizontal.Transparency = 0
+highlight_horizontal.BorderSizePixel = 0
+highlight_horizontal.ZIndex = 10
+
+local highlight_vertical = Instance.new'Frame'
+highlight_vertical.Parent = frame2
+highlight_vertical.BackgroundColor3 = color45
+highlight_vertical.Transparency = 0
+highlight_vertical.BorderSizePixel = 0
+highlight_vertical.ZIndex = 10
+
+local function TS(object, times, tweeninfo, type)
+	if type == 1 then
+		TweenService:Create(object, TweenInfo.new(times), tweeninfo):Play()
+	else
+		return TweenService:Create(object, TweenInfo.new(times), tweeninfo)
+	end
+end
+
+local function hold()
+	return UIS:IsKeyDown(gui44)
+end
+
+local function all_button()
+	if dropdown_mode then
+		for _,v in pairs(dropdown_focus:GetChildren()) do
+			if v:IsA'Frame' and v.Visible then
+				local x = v:GetChildren()
+				table.insert(x, dropdown_focus)
+				table.insert(x, dropdown_focus.TextButton) -- exit button
+			--task.wait() -- add a little wait so it won't select 2 button(cuz dropdown adding) + universal wait
+            return x
+			end
+        end
+	end
+	task.wait() -- add a little wait so it won't select 2 button(cuz dropdown adding) + universal waitcheck_to_select()check_binder_or_dropdown_active()
+	return frame1:GetChildren()
+end
+
+local function highlight()
+	-- if current_selector.Parent.Name == 'ScrollingFrame' then -- if interact with dropdown's button
+	-- 	if current_selector.Parent.Visible then -- if choosing
+	-- 		local a = current_selector.Parent.AbsolutePosition.Y --get min
+	-- 		local b = a + 140 -- get max
+	-- 		if current_selector.AbsolutePosition.Y < a then -- if < min then roll forward
+	-- 			repeat task.wait()
+	-- 				current_selector.Parent.CanvasPosition -= Vector2.new(0, 60)
+	-- 			until current_selector.AbsolutePosition.Y >= a
+	-- 		elseif current_selector.AbsolutePosition.Y > b then -- if > max then roll backward
+	-- 			repeat task.wait()
+	-- 				current_selector.Parent.CanvasPosition += Vector2.new(0, 60)
+	-- 			until current_selector.AbsolutePosition.Y <= b
+	-- 		end
+	-- 	elseif current_selector.Parent.Visible == false then -- if done chossing  -- back to main button
+	-- 		current_selector = current_selector.Parent.Parent -- this for next keymove, highlight
+	-- 	end
+	-- end
+	
+	highlight_horizontal.Position = UDim2.new(0, current_selector.AbsolutePosition.X + current_selector.AbsoluteSize.X + 15, 0, current_selector.AbsolutePosition.Y + current_selector.AbsoluteSize.Y + 40) -- fixed distance
+	highlight_horizontal.Size = UDim2.new(0, 0, 0, 6)			--ready to tween  size
+	highlight_vertical.Position = UDim2.new(0, current_selector.AbsolutePosition.X + current_selector.AbsoluteSize.X + 5, 0, current_selector.AbsolutePosition.Y + current_selector.AbsoluteSize.Y + 50) -- fixed distance
+	highlight_vertical.Size = UDim2.new(0, 6, 0, 0)				--ready to tween  size
+
+	details_txt1.Text = current_selector.Text
+	if current_selector:GetAttribute("detail") ~= nil then
+		details_txt2.Text = current_selector:GetAttribute("detail")
+	else
+		details_txt2.Text = ''
+	end
+
+	if highlight_vertical_tween_conflict_avoid ~= nil then -- check if varibale attached to a tween
+		if highlight_vertical_tween_conflict_avoid.PlaybackState ~= Enum.PlaybackState.Completed then -- check 1 change 2
+	 		highlight_vertical_tween_conflict_avoid:Cancel()
+	 		highlight_horizontal_tween_conflict_avoid:Cancel()
+		end
+	end
+
+	highlight_horizontal_tween_conflict_avoid = TS(highlight_horizontal, 0.5, {Size = UDim2.new(0, current_selector.AbsoluteSize.X * -0.8, 0, 6)}, 2)--80% of real bar ((-)right to left)
+	highlight_horizontal_tween_conflict_avoid:Play()
+
+	highlight_vertical_tween_conflict_avoid = TS(highlight_vertical, 0.5, {Size = UDim2.new(0, 6, 0, current_selector.AbsoluteSize.Y * -1)}, 2)
+	highlight_vertical_tween_conflict_avoid:Play()
+end
+
+local function check_binder_or_dropdown_active()
+	if binder_mode then
+		current_selector = binder_focus
+		highlight()
+		print('you are interact with '.. binder_focus.Text)
+		return true
+	elseif dropdown_mode then
+		current_selector = dropdown_focus
+		highlight()
+		print('you are interact with '.. dropdown_focus.Text)
+		return true
+	end
+	return false
+end
+
+-- function check_to_select()
+-- 	if check_binder_or_dropdown_active() then
+-- 		return false
+-- 	else return true
+-- 	end
+-- end
+
+local function reset_xytemp()
+	min, max = 0, 20000
+end
+
+local function keymove(direction)
+	if binder_mode then -- if interact with binder focus on it --still need this piece not clean at all
+		current_selector = binder_focus
+		return highlight()
+	end
+
+	local temp_selector = current_selector -- choosing near button based on direction
+	if direction == 'up' then
+		for _,v in pairs(all_button()) do
+			if v.AbsolutePosition.Y < temp_selector.AbsolutePosition.Y and (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude < max then
+				max = (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude
+				current_selector = v
+			end
+		end
+	elseif direction == 'down' then
+		for _,v in pairs(all_button()) do
+			if v.AbsolutePosition.Y > temp_selector.AbsolutePosition.Y and (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude < max then
+				max = (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude
+				current_selector = v
+			end
+		end
+	elseif direction == 'right' then
+		for _,v in pairs(all_button()) do
+			if v.AbsolutePosition.X > temp_selector.AbsolutePosition.X and (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude < max then
+				max = (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude
+				current_selector = v
+			end
+		end
+	elseif direction == 'left' then
+		for _,v in pairs(all_button()) do
+			if v.AbsolutePosition.X < temp_selector.AbsolutePosition.X and (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude < max then
+				max = (v.AbsolutePosition - temp_selector.AbsolutePosition).Magnitude
+				current_selector = v
+			end
+		end
+	else 	-- Enter
+		if current_selector == nil then return
+		else
+		--elseif check_binder_or_dropdown_active() == false then
+		--	return --highlight in check mode_drd n mode_bin local function so  return
+		--elseif check_binder_or_dropdown_active() then
+			return firesignal(current_selector.MouseButton1Click)
+		end
+	end
+	highlight()
+	reset_xytemp()
+end
+
+local function text(txt, position, size)
+	local text = Instance.new'TextLabel'
+	text.Parent = frame2
+	text.BackgroundTransparency = 1
+	text.Position = position
+	text.Size = UDim2.new(0, 200, 0, 50)
+	text.Font = Enum.Font.GothamBlack
+	text.Text = tostring(txt) --or ''
+	text.TextColor3 = color45
+	text.TextSize = tonumber(size) or 18
+	text.TextXAlignment = Enum.TextXAlignment.Left
+	text.ZIndex = 10
+end
+
+local function textbox()
+end
+
+local function line(lie_position, lie_size)
+	local lie_frame = Instance.new'Frame'
+	lie_frame.Parent = frame2
+	lie_frame.BackgroundColor3 = color45
+	lie_frame.Transparency = 0.7
+	lie_frame.Position = lie_position
+	lie_frame.BorderSizePixel = 0
+	lie_frame.Size = lie_size
+	lie_frame.ZIndex = 10
+end
+
+local function noti(not_detail)
+	local not_frame1 = Instance.new'Frame'
+	not_frame1.Parent = frame3
+	not_frame1.BackgroundColor3 = color46
+	--not_frame1.Transparency = 0.15
+	not_frame1.BorderSizePixel = 0
+	not_frame1.Position = UDim2.new(1, -270, 1, -100)
+	not_frame1.Size = UDim2.new(0, 0, 0, 40)  --ready to tween UDim2.new(0, 260, 0, 40)
+	not_frame1.ZIndex = 10
+
+	local not_frame2 = Instance.new'Frame'
+	not_frame2.Parent = not_frame1
+	not_frame2.BackgroundColor3 = color45
+	--not_frame2.Transparency = 0.6
+	not_frame2.BorderSizePixel = 0
+	not_frame2.Position = UDim2.new(0, 0, 0.775, 0)
+	not_frame2.Size = UDim2.new(1, 0, 0.1, 0)
+	not_frame2.ZIndex = 10
+
+	local not_frame3 = Instance.new'Frame'
+	not_frame3.Parent = not_frame1
+	not_frame3.BackgroundColor3 = color45
+	--not_frame3.Transparency = 0.6
+	not_frame3.BorderSizePixel = 0
+	not_frame3.Position = UDim2.new(0, 0, 1, 0)
+	not_frame3.Size = UDim2.new(1, 0, 0.2, 0)	
+	not_frame3.ZIndex = 10
+	
+	local not_text = Instance.new'TextLabel'
+	not_text.Parent = not_frame1
+	not_text.BackgroundTransparency = 1
+	not_text.Position = UDim2.new(0.121, 0, -0.131, 0)
+	not_text.Size = UDim2.new(0, 200, 0, 50)
+	not_text.Font = Enum.Font.ArialBold
+	not_text.Text = tostring(not_detail) or ''
+	not_text.TextColor3 = color45
+	not_text.TextSize = 15
+	--text.TextXAlignment = Enum.TextXAlignment.Left
+	not_text.ZIndex = 10
+
+	--print(#notification_table) -- still work but need fix 
+	--print(notification_table[2]) -- still work but need fix 
+	if #notification_table >= 3 then
+		--TS(notification_table[1], 0.3, {Size = UDim2.new(0, 0, 0, 0)}, 1)
+		notification_table[1]:destroy() -- destroy the last one from the game
+		table.remove(notification_table, 1) -- remove last one from the list
+
+		TS(notification_table[1], 0.5, {Position = UDim2.new(1, -270, 1, -220)}, 1) -- move the first and second
+		TS(notification_table[2], 0.5, {Position = UDim2.new(1, -270, 1, -160)}, 1)	
+	elseif #notification_table == 2 then
+		TS(notification_table[1], 0.5, {Position = UDim2.new(1, -270, 1, -220)}, 1) -- move the first and second
+		TS(notification_table[2], 0.5, {Position = UDim2.new(1, -270, 1, -160)}, 1)
+	elseif #notification_table == 1 then
+		TS(notification_table[1], 0.5, {Position = UDim2.new(1, -270, 1, -160)}, 1) -- move the first
+	end
+	table.insert(notification_table, not_frame1)
+	TS(notification_table[#notification_table], 0.5,  {Size = UDim2.new(0, 260, 0, 40)}, 1)
+    task.spawn(function() -- spawn a thread to wait()
+		task.wait(7)
+		not_frame1:destroy()
+		--table.remove(notification_table, notification_table[not_frame1]) -- still work but need fix 
+	end)
+end
+
+local function button(btn_name, btn_detail, btn_position, btn_callback)
+	local button = Instance.new'TextButton'
+	button.Parent = frame1
+	button.BackgroundColor3 = color45
+	button.Transparency = 0.2
+	button.BorderSizePixel = 0
+	button.Position = btn_position
+	button.Size = UDim2.new(0, 110, 0, 35)
+	button.Font = Enum.Font.GothamBlack
+	button.Text = tostring(btn_name) or 'Text'
+	button.TextColor3 = Color3.fromRGB(0, 0, 0)
+	button.TextSize = 14
+    button.TextTruncate = Enum.TextTruncate.AtEnd
+	button:SetAttribute("detail", btn_detail)
+
+	button.MouseEnter:Connect(function()
+		if check_binder_or_dropdown_active() then
+			return
+		end
+
+		current_selector = button
+		highlight()
+	end)
+
+	button.MouseButton1Click:Connect(function()
+		if check_binder_or_dropdown_active() then
+			return
+		end
+
+		current_selector = button
+		highlight()
+		btn_callback()
+	end)
+end
+
+local function toggle(tog_name, tog_detail, tog_position, tog_callback) 
+	local tog_button = Instance.new'TextButton'
+	tog_button.Parent = frame1
+	tog_button.BackgroundColor3 = color45
+	tog_button.Transparency = 0.2
+	tog_button.BorderSizePixel = 0
+	tog_button.Position = tog_position
+	tog_button.Size = UDim2.new(0, 110, 0, 35)
+	tog_button.Font = Enum.Font.GothamBlack
+	tog_button.Text = tostring(tog_name)
+	tog_button.TextColor3 = Color3.fromRGB(0, 0, 0)
+	tog_button.TextSize = 14
+	tog_button.ZIndex = 2 -- 2 so it over tog_frame?
+    tog_button.TextTruncate = Enum.TextTruncate.AtEnd
+	tog_button:SetAttribute("detail", tog_detail) 
+
+	local tog_frame = Instance.new'Frame'
+	tog_frame.Parent = tog_button
+	tog_frame.BackgroundColor3 = color46
+	tog_frame.Transparency = 0.15
+	tog_frame.BorderSizePixel = 0
+	tog_frame.Position = UDim2.new(-0.15, 0, -0.2, 0)
+	tog_frame.Size = UDim2.new(0.9, 0, 0.9, 0)
+	--tog_frame.ZIndex = 1
+
+	local tog_frame2 = Instance.new'Frame'
+	tog_frame2.Parent = tog_frame
+	tog_frame2.BackgroundColor3 = color45
+	tog_frame2.Transparency = 0.6
+	tog_frame2.BorderSizePixel = 0
+	tog_frame2.Position = UDim2.new(0, 0, 0, 0)
+	tog_frame2.Size = UDim2.new(0, 0, 0, 0)
+	--tog_frame2.ZIndex = 2
+
+	tog_button.MouseEnter:Connect(function()
+		if check_binder_or_dropdown_active() then
+			return
+		end
+
+		current_selector = tog_button
+		highlight()
+	end)
+
+	local tf = false
+	tog_button.MouseButton1Click:Connect(function()
+		if check_binder_or_dropdown_active() then
+			return
+		end
+
+		current_selector = tog_button
+		highlight()
+
+		tf = not tf
+		if tf then
+			TS(tog_frame2, 0.2, {Size = UDim2.new(1, 0, 1, 0)}, 1)
+		else
+			TS(tog_frame2, 0.2, {Size = UDim2.new(0, 0, 0, 0)}, 1)
+		end
+		tog_callback(tf)
+	end)
+end
+
+local function binder(bin_name, bin_detail, bin_position, bin_key, bin_callback)
+	local bin_button = Instance.new'TextButton'
+	bin_button.Parent = frame1
+	bin_button.BackgroundColor3 = color45
+	bin_button.Transparency = 0.2
+	bin_button.BorderSizePixel = 0
+	bin_button.Position = bin_position
+	bin_button.Size = UDim2.new(0, 110, 0, 35)
+	bin_button.Font = Enum.Font.GothamBlack
+	bin_button.Text = tostring(bin_name)
+	bin_button.TextColor3 = Color3.fromRGB(0, 0, 0)
+	bin_button.TextSize = 14
+	bin_button.ZIndex = 2 --2 so it over bin_info?
+    bin_button.TextTruncate = Enum.TextTruncate.AtEnd
+	bin_button:SetAttribute("detail", bin_detail) 
+
+	local bin_info = Instance.new'TextLabel'
+	bin_info.Parent = bin_button
+	bin_info.BackgroundColor3 = color46
+	bin_info.BackgroundTransparency = 0.15
+	bin_info.BorderSizePixel = 0
+	bin_info.Position = UDim2.new(-0.85, 0, 0.2, 0)
+	bin_info.Size = UDim2.new(0.9, 0, 0.9, 0)
+	bin_info.Font = Enum.Font.ArialBold
+	bin_info.Text = string.sub(tostring(bin_key), 14)
+	bin_info.TextColor3 = color45
+	bin_info.TextSize = 14
+
+	bin_button.MouseEnter:Connect(function()
+		if check_binder_or_dropdown_active() then
+			return
+		end
+
+		current_selector = bin_button
+		highlight()
+	end)
+
+	local changing = false -- a toggle for changing mode
+	bin_button.MouseButton1Click:Connect(function() -- on click choose a new key
+		if check_binder_or_dropdown_active() then
+			return
+		end
+		
+		current_selector = bin_button
+		highlight()
+
+		if not changing then -- enter changing key bind mode
+			changing = true
+			binder_mode = true -- global variable for binder mode
+			binder_focus = bin_button  -- focus on this button
+			bin_info.Text = 'press a key'
+			if bin_button.ZIndex < 5 then --check 1 change 2 --focus mode start
+				bin_button.ZIndex += 5
+				bin_info.ZIndex +=5
+			end
+			TS(frame1, 0.25,{ZIndex = 5}, 1) --focus mode start
+
+			local x1
+			x1 = UIS.InputEnded:Connect(function(x)
+				if frame1.Visible then
+					if x.KeyCode == getgenv().gui44 or x.KeyCode == getgenv().select44 or x.KeyCode == Enum.KeyCode.Unknown then
+						noti"Please choose another key"
+					else task.wait() -- add a bit delay so it don't callback() on changing
+						changing = false
+						binder_mode = false
+						binder_focus = nil
+						bin_key = x.KeyCode
+						bin_info.Text = string.sub(tostring(x.KeyCode), 14) -- Enum.Keycode. | string.sub(cut from x to y) cut from 14 to end
+						if bin_button.ZIndex > 5 then --check 1 change 2  --focus mode end
+							bin_button.ZIndex -= 5
+							bin_info.ZIndex -=5
+						end
+						TS(frame1, 0.25,{ZIndex = 0}, 1) --focus mode end
+						x1:Disconnect()
+
+					end
+				end
+			end)
+		end
+	end)
+
+    UIS.InputEnded:Connect(function(x) --main trigger
+        if x.KeyCode == bin_key and not changing then -- won't trigger when changing (old key)
+			bin_callback()
+		end
+    end)
+end
+
+local function slider(sli_name, sli_detail, sli_position, sli_min, sli_max, sli_input_default, sli_callback)
+	local sli_button = Instance.new'TextButton'
+	sli_button.Parent = frame1
+	sli_button.BackgroundColor3 = color46
+	sli_button.Transparency = 1
+	sli_button.BorderSizePixel = 0
+	sli_button.Position =  sli_position
+	sli_button.Size = UDim2.new(0, 220, 0, 20)
+	sli_button.Font = Enum.Font.SourceSans
+	sli_button.Text = tostring(sli_name)
+	sli_button.TextColor3 = Color3.fromRGB(0, 0, 0)
+	sli_button.TextSize = 14
+	sli_button:SetAttribute("detail", sli_detail) 
+
+	local sli_info = Instance.new'TextLabel'
+	sli_info.Parent = sli_button
+	--sli_info.BackgroundColor3 = color46
+	sli_info.BackgroundTransparency = 1
+	sli_info.Position = UDim2.new(0, 0, -1.5, 0)
+	sli_info.Size = UDim2.new(0, 110, 0, 35)
+	sli_info.Font = Enum.Font.GothamBlack
+	sli_info.Text = tostring(sli_name)
+	sli_info.TextColor3 = color45
+	sli_info.TextSize = 14
+    sli_info.TextTruncate = Enum.TextTruncate.AtEnd
+
+	local sli_info2 = Instance.new'TextLabel'
+	sli_info2.Parent = sli_button
+	--sli_info2.BackgroundColor3 = color46
+	sli_info2.BackgroundTransparency = 1
+	sli_info2.Position = UDim2.new(0.6, 0, -1.5, 0)
+	sli_info2.Size = UDim2.new(0, 100, 0, 30)
+	sli_info2.Font = Enum.Font.GothamBlack
+	sli_info2.Text = 'Value'
+	sli_info2.TextColor3 = color45
+	sli_info2.TextSize = 14
+
+	local sli_bar = Instance.new'Frame'
+	sli_bar.Parent = sli_button
+	sli_bar.BackgroundColor3 = color46
+	sli_bar.Transparency = 0.15
+	sli_bar.BorderSizePixel = 0
+	--sli_bar.Position = empty -> UDim2.new(0,0,0,0)
+	sli_bar.Size = UDim2.new(1, 0, 1, 0)
+
+	local sli_filll = Instance.new'Frame'
+	sli_filll.Parent = sli_button
+	sli_filll.BackgroundColor3 = color45
+	sli_filll.Transparency = 0.2
+	sli_filll.BorderSizePixel = 0
+	--sli_filll.Position = empty -> UDim2.new(0,0,0,0)
+	--sli_filll.Size = no need cuz slider_default
+
+	if sli_min > sli_max then																				--min, max double check
+		local temp = sli_min
+		sli_min = sli_max
+		sli_max = temp
+	end
+
+	local sli_default = math.clamp(sli_input_default, sli_min, sli_max)										--(x, min, max) -> return middle number
+
+	sli_filll.Size = UDim2.new(sli_default/sli_max, 0, 0, 20)												--default fill
+	sli_info2.Text = tostring(sli_default)																	--default info
+	sli_callback(sli_default)																				--default default callback
+
+
+	local sli_toggle = false																				--mouse's
+	local sli_start = sli_bar.AbsolutePosition.X															--mouse's
+	local sli_ends = sli_bar.AbsoluteSize.X																	--mouse's
+	local function mouse() return UIS:GetMouseLocation().X end												--mouse's
+	local function GuiCapture() return math.clamp(((mouse() - sli_start)/ sli_ends), 0, 1) end				--mouse's
+	local function value() return math.floor(sli_min + (sli_max - sli_min)* GuiCapture()) end				--mouse's
+	local sli_button_percentage = 0																			--keyboard's
+	local function sli_loop() -- (0, 0.1,->1)																--keyboard's
+		sli_button_percentage += 1  -- 0.1 + 0.2 ~= 0.3 -> can't use so -> interger
+		if tostring(sli_button_percentage) == tostring(11) then -- take 10 not 11
+			sli_button_percentage = 0
+		end
+	end
+
+	sli_button.MouseEnter:Connect(function()															--mouse in
+		if check_binder_or_dropdown_active() then
+			return
+		end
+
+		current_selector = sli_button	
+		highlight()
+	end)
+
+	local sli_press = UIS.InputEnded:Connect(function(x) 													--keyboard capture
+		if frame1.Visible and current_selector == sli_button and x.KeyCode == select44  then
+			if check_binder_or_dropdown_active() then
+				return
+			end
+
+			--current_selector = sli_button	
+			highlight()
+
+			sli_loop()
+			TS(sli_filll, 0.15, {Size = UDim2.new(0, (sli_button.Size.X.Offset * sli_button_percentage)/10, 0, 20)}, 1)
+			sli_info2.Text = tostring(math.floor((sli_max * sli_button_percentage)/10))
+			sli_callback(math.floor((sli_max * sli_button_percentage)/10))
+		end
+	end)
+
+	sli_button.MouseButton1Down:Connect(function() 															--mouse capture
+		if check_binder_or_dropdown_active() then
+			return
+		end
+
+		current_selector = sli_button
+		highlight()
+
+		sli_toggle = true -- on
+		local off = UIS.InputEnded:Connect(function(x)
+			if x.UserInputType == Enum.UserInputType.MouseButton1 then
+				sli_toggle = false -- off
+			end
+		end)
+		repeat task.wait()
+			TS(sli_filll, 0.15, {Size = UDim2.new(GuiCapture(), 0, 0, 20)}, 1)
+			sli_info2.Text = tostring(value())
+			sli_callback(value())
+		until not sli_toggle
+		off:Disconnect()	
+	end)
+end
+
+-- local function dropdown(drd_name, drd_position, drd_list, drd_callback) --return string within list
+-- 	local drd_button = Instance.new'TextButton'
+-- 	drd_button.Parent = frame1
+-- 	drd_button.BackgroundColor3 = color45
+-- 	drd_button.Transparency = 0.2
+-- 	drd_button.BorderSizePixel = 0
+-- 	drd_button.Position = drd_position
+-- 	drd_button.Size = UDim2.new(0, 110, 0, 35)
+-- 	drd_button.Font = Enum.Font.GothamBlack
+-- 	drd_button.Text = tostring(drd_name)
+-- 	drd_button.TextColor3 = Color3.fromRGB(0, 0, 0)
+-- 	drd_button.TextSize = 14
+-- 	drd_button.ZIndex = 3
+
+-- 	local drd_info = Instance.new'TextLabel'
+-- 	drd_info.Parent = drd_button
+-- 	drd_info.BackgroundColor3 = color46
+-- 	drd_info.BackgroundTransparency = 0.15
+-- 	drd_info.BorderSizePixel = 0
+-- 	drd_info.Position = UDim2.new(-0.4, 0, 0, 0)
+-- 	drd_info.Size = UDim2.new(0.4, 0, 1, 0)
+-- 	drd_info.Font = Enum.Font.ArialBold
+-- 	drd_info.Text = '+'
+-- 	drd_info.TextColor3 = color45
+-- 	drd_info.TextSize = 20
+
+-- 	local drd_scroll = Instance.new'ScrollingFrame'
+-- 	drd_scroll.Parent = drd_button
+-- 	--drd_scroll.BackgroundColor3 = color46
+-- 	drd_scroll.BackgroundTransparency = 1
+-- 	drd_scroll.BorderSizePixel = 0
+-- 	drd_scroll.Position = UDim2.new(-0.4, 0, 1.5, 0)
+-- 	drd_scroll.Size = UDim2.new(1.4, 0, 5, 0)
+-- 	drd_scroll.Visible = false
+-- 	--drd_scroll.CanvasSize = UDim2.new(0,500,2,500) --need calculate [BELOW] 
+-- 	drd_scroll.ScrollingDirection = 'Y' -- no need X input on CanvasSize
+-- 	drd_scroll.ScrollBarThickness = 5
+-- 	--drd_scroll.VerticalScrollBarPosition = 'Right' --default alr
+-- 	--drd_scroll.ScrollBarImageColor3 = color45
+-- 	drd_scroll.ScrollBarImageTransparency = 0
+-- 	drd_scroll.ZIndex = 4
+
+-- 	local function change_dropdown_icon() -- local function so it work for multi dropdown
+-- 		if drd_scroll.Visible == false then 
+-- 			drd_info.Text = '+'
+-- 			TS(frame1, 0.25,{ZIndex = 0})
+-- 		else drd_info.Text = '...'
+-- 			TS(frame1, 0.25,{ZIndex = 4})
+-- 		end
+-- 	end
+
+-- 	local drd_scroll_btn_distance = 0
+-- 	for _,v in pairs(drd_list) do
+-- 		local drd_scroll_btn = Instance.new'TextButton'
+-- 		drd_scroll_btn.Parent = drd_scroll
+-- 		drd_scroll_btn.BackgroundColor3 = color45
+-- 		drd_scroll_btn.Transparency = 0.2
+-- 		drd_scroll_btn.BorderSizePixel = 0
+-- 		drd_scroll_btn.Position = UDim2.new(0,0,0,drd_scroll_btn_distance) --first button
+-- 		drd_scroll_btn_distance += 50	-- next button 
+-- 		drd_scroll_btn.Size = UDim2.new(0, 110, 0, 35)
+-- 		drd_scroll_btn.Font = Enum.Font.GothamBlack
+-- 		drd_scroll_btn.Text = tostring(v) or 'Text'
+-- 		drd_scroll_btn.TextColor3 = Color3.fromRGB(0, 0, 0)
+-- 		drd_scroll_btn.TextSize = 14
+-- 		drd_scroll_btn.ZIndex = 5
+
+-- 		drd_scroll_btn.MouseEnter:Connect(function()
+-- 			current_selector = drd_scroll_btn
+-- 			highlight()
+-- 		end)
+	
+-- 		drd_scroll_btn.MouseButton1Click:Connect(function()
+-- 			drd_scroll.Visible = false
+-- 			change_dropdown_icon()
+-- 			drd_button.Text = drd_scroll_btn.Text
+-- 			drd_callback(drd_button.Text) --return text
+-- 		end)
+-- 	end
+
+-- 	drd_scroll.CanvasSize = UDim2.new(0, 0, 2, drd_scroll_btn_distance - 85) --no need X scale or offset cuz this is dropdown(Y) not inventory or chart(XY) 85 just a fixed number
+
+-- 	drd_button.MouseEnter:Connect(function()
+-- 		current_selector = drd_button
+-- 		highlight()
+-- 	end)
+
+-- 	drd_button.MouseButton1Click:Connect(function()
+-- 		drd_scroll.Visible = not drd_scroll.Visible
+-- 		change_dropdown_icon()
+-- 		drd_callback(drd_button.Text) --return text
+-- 	end)
+-- 	drd_callback(drd_button.Text) --return text
+-- end
+
+local function dropdown2(drd_name, drd_detail, drd_position, drd_style, drd_style2, drd_list, drd_callback) --return string within list
+	local drd_button = Instance.new'TextButton'
+	drd_button.Parent = frame1
+	drd_button.BackgroundColor3 = color45
+	drd_button.Transparency = 0.2
+	drd_button.BorderSizePixel = 0
+	drd_button.Position = drd_position
+	drd_button.Size = UDim2.new(0, 110, 0, 35)
+	drd_button.Font = Enum.Font.GothamBlack
+	drd_button.Text = tostring(drd_name)
+	drd_button.TextColor3 = Color3.fromRGB(0, 0, 0)
+	drd_button.TextSize = 14
+    drd_button.TextTruncate = Enum.TextTruncate.AtEnd
+	--drd_button.ZIndex = 1
+	drd_button:SetAttribute("detail", drd_detail) 
+
+	local drd_info = Instance.new'TextLabel'
+	drd_info.Parent = drd_button
+	drd_info.BackgroundColor3 = color46
+	drd_info.BackgroundTransparency = 0.15
+	drd_info.BorderSizePixel = 0
+	drd_info.Position = UDim2.new(-0.4, 0, 0, 0)
+	drd_info.Size = UDim2.new(0.4, 0, 1, 0)
+	drd_info.Font = Enum.Font.GothamBlack
+	drd_info.Text = '+'
+	drd_info.TextColor3 = color45
+	drd_info.TextSize = 16
+	--drd_info.ZIndex = 4
+
+	local drd_button_exit = Instance.new'TextButton'
+	drd_button_exit.Parent = drd_button
+	drd_button_exit.BackgroundColor3 = color45
+	drd_button_exit.Transparency = 0.2
+	drd_button_exit.BorderSizePixel = 0
+	drd_button_exit.Position = UDim2.new(1.2, 0, 0, 0)
+	drd_button_exit.Size = UDim2.new(1, 0, 1, 0)
+	drd_button_exit.Font = Enum.Font.GothamBlack
+	drd_button_exit.Text = 'Exit'
+	drd_button_exit.TextColor3 = Color3.fromRGB(0, 0, 0)
+	drd_button_exit.TextSize = 14
+	drd_button_exit.Visible = false
+	drd_button_exit.ZIndex = 6 --set high as default cuz we gonna change it's visible
+
+	if drd_style2 == "static" then
+									local drd_frame_table = {}
+									local drd_list_return = {}
+									local drd_list_frame_above_or_below
+									local drd_list_button_active_single
+									local drd_maxbutton_page = 21
+									local drd_getframe_forshow = 1
+									local drd_x_distance_list_button = 0
+									local drd_x_distance_list_button_temp = 0
+									local drd_list_frame_X = ((screen_X - 1010)-(screen_X - 1010)/2)-drd_button.AbsolutePosition.X
+									--formular for desired AbsolutePosition offset | Desired[offset] - Parent.AbsolutePosition.X
+									--Desired[offset] | ((screen_X - 1010)-(screen_X - 1010)/2)
+
+									for i = 1, #drd_list, drd_maxbutton_page do -- creat a frame every 21 button
+										local drd_frame = Instance.new'Frame'
+										drd_frame.Parent = drd_button
+										drd_frame.BackgroundColor3 = color46
+										drd_frame.Transparency = 1
+										drd_frame.BorderSizePixel = 0
+										--drd_frame.Position = UDim2.new(-5, 0, -11, 0) -- will be set below
+										drd_frame.Size = UDim2.new(1, 0, 1, 0) --doesn't matter this frame just for visible button inside (scale 1, 1 for easier placing button inside)
+										drd_frame.Visible = false
+										--drd_frame.ZIndex = 4
+									end
+
+									for _,v in pairs(drd_button:GetChildren()) do
+										if v:IsA'Frame' then
+											table.insert(drd_frame_table, v)
+										end
+									end
+
+									local function drd_getframe(x)
+										local frame_position = 1
+										repeat task.wait()
+											if (x - drd_maxbutton_page) >= 1 then --current button - 21 button
+												frame_position += 1 -- new frame
+											end
+											x -= drd_maxbutton_page -- setup next x for loop
+										until x <= 0 -- no need more frame
+										return frame_position
+									end
+
+									local function drd_getbutton(x)
+										if x <= drd_maxbutton_page then --smaller than max button on screen
+											return x
+										else --greater max button on screen
+											repeat
+												x -= drd_maxbutton_page
+											until x  <= drd_maxbutton_page
+										return x
+										end
+									end
+
+									local function drd_getframe_forshow_func()
+										for _,v in pairs(drd_frame_table) do
+											if v.Visible then
+												drd_getframe_forshow += 1 -- + 1 page if there a visible page
+												break
+											end
+										end
+
+										if drd_getframe_forshow > #drd_frame_table then -- reset page
+											drd_getframe_forshow = 1
+										end
+									end
+
+									if (drd_button.Position.Y.Offset - drd_button.Size.Y.Offset + 120) >= (frame1.AbsoluteSize.Y - drd_button.Position.Y.Offset + drd_button.Size.Y.Offset) then-- +100 to make it more likely to go up
+										drd_list_frame_above_or_below = -4.5 --above --make it bigger so it move coorrectly on dropdown
+									else
+										drd_list_frame_above_or_below = 4.5 --below
+									end
+
+									for _,v in pairs(drd_frame_table) do
+										v.Position = UDim2.new(0, drd_list_frame_X, 1 * drd_list_frame_above_or_below, 0)--Y_fixed up or down
+									end
+
+									for i,v in pairs(drd_list) do
+										local drd_list_button = Instance.new'TextButton'
+										drd_list_button.Parent = drd_frame_table[drd_getframe(i)]
+										drd_list_button.BackgroundColor3 = color45
+										drd_list_button.Transparency = 0.2
+										drd_list_button.BorderSizePixel = 0
+										--drd_list_button.Position = --this will be set below
+										drd_list_button.Size = UDim2.new(0, 110, 0, 35)
+										drd_list_button.Font = Enum.Font.GothamBlack
+										drd_list_button.Text = tostring(v)
+										drd_list_button.TextColor3 = Color3.fromRGB(0, 0, 0)
+										drd_list_button.TextSize = 14
+										drd_list_button.ZIndex = 6 --set high as default cuz we gonna change visible of it's parent frame
+                                        drd_list_button.TextTruncate = Enum.TextTruncate.AtEnd
+										drd_list_button:SetAttribute("detail", drd_detail) 
+										
+									
+										local drd_list_button_frame = Instance.new'Frame'
+										drd_list_button_frame.Parent = drd_list_button
+										drd_list_button_frame.BackgroundColor3 = color46
+										drd_list_button_frame.Transparency = 0.15
+										drd_list_button_frame.BorderSizePixel = 0
+										drd_list_button_frame.Position = UDim2.new(-0.15, 0, -0.2, 0)
+										drd_list_button_frame.Size = UDim2.new(0.9, 0, 0.9, 0)
+										drd_list_button_frame.ZIndex = 5 --set high as default cuz we gonna change visible of it's parent frame
+									
+										local drd_list_button_frame2 = Instance.new'Frame'
+										drd_list_button_frame2.Parent = drd_list_button_frame
+										drd_list_button_frame2.BackgroundColor3 = color45
+										drd_list_button_frame2.Transparency = 0.6
+										drd_list_button_frame2.BorderSizePixel = 0
+										drd_list_button_frame2.Position = UDim2.new(0, 0, 0, 0)
+										drd_list_button_frame2.Size = UDim2.new(0, 0, 0, 0)
+										drd_list_button_frame2.ZIndex = 5 --set high as default cuz we gonna change visible of it's parent frame
+									
+										drd_list_button.MouseEnter:Connect(function()
+											current_selector = drd_list_button
+											highlight()
+										end)
+									
+										local tf = false
+										drd_list_button.MouseButton1Click:Connect(function()
+											tf = not tf
+											if drd_style == 'single' then --single select
+												if tf then
+													current_selector = drd_list_button
+													highlight()
+
+													if drd_list_button_active_single ~= nil then -- other button is active
+														firesignal(drd_list_button_active_single.MouseButton1Click) -- trigger tf(false) of that button
+													end
+													
+													table.clear(drd_list_return) --empty list
+													drd_list_return[1] = v --add this button's name
+													drd_list_button_active_single = drd_list_button --active button
+													TS(drd_list_button_frame2, 0.2, {Size = UDim2.new(1, 0, 1, 0)}, 1)
+												else
+													if current_selector == drd_list_button then --highlight this button when false but not by the firesignal above
+														highlight()
+													end
+
+													table.clear(drd_list_return)--empty list, will trigger by firesignal above
+													drd_list_button_active_single = nil --no actice button
+													TS(drd_list_button_frame2, 0.2, {Size = UDim2.new(0, 0, 0, 0)}, 1)
+												end
+											else --multi slect
+												current_selector = drd_list_button
+												highlight()
+
+												if tf then
+													table.insert(drd_list_return, v) --add this button's name to list
+													TS(drd_list_button_frame2, 0.2, {Size = UDim2.new(1, 0, 1, 0)}, 1)
+												else
+													for i2,v2 in pairs(drd_list_return) do
+														if v2 == v then --remove this button's name from list
+															table.remove(drd_list_return, i2)
+														end
+													end
+													TS(drd_list_button_frame2, 0.2, {Size = UDim2.new(0, 0, 0, 0)}, 1)
+												end
+											end
+											drd_callback(drd_list_return) --return list
+										end)
+
+										if drd_getbutton(i) < 7 then
+											drd_list_button.Position = UDim2.new(0, drd_x_distance_list_button_temp, 0, 0) --Y first line(frame)
+											drd_x_distance_list_button_temp += 150
+										elseif drd_getbutton(i) == 7 then
+											drd_list_button.Position = UDim2.new(0, drd_x_distance_list_button_temp, 0, 0)
+											drd_x_distance_list_button_temp = drd_x_distance_list_button --reset(newline)
+										elseif drd_getbutton(i) < 14 then
+											drd_list_button.Position = UDim2.new(0, drd_x_distance_list_button_temp, drd_list_frame_above_or_below/2, 0) --Y scale second line
+											drd_x_distance_list_button_temp += 150
+										elseif drd_getbutton(i) == 14 then
+											drd_list_button.Position = UDim2.new(0, drd_x_distance_list_button_temp, drd_list_frame_above_or_below/2, 0)
+											drd_x_distance_list_button_temp = drd_x_distance_list_button --reset(newline)
+										elseif drd_getbutton(i) < 21 then
+											drd_list_button.Position = UDim2.new(0, drd_x_distance_list_button_temp, (drd_list_frame_above_or_below * 2)/2, 0) --Y scale third line
+											drd_x_distance_list_button_temp += 150
+										elseif drd_getbutton(i) == 21 then
+											drd_list_button.Position = UDim2.new(0, drd_x_distance_list_button_temp, (drd_list_frame_above_or_below * 2)/2, 0)
+											drd_x_distance_list_button_temp = drd_x_distance_list_button --reset(newline)
+										end
+
+									end
+
+									drd_button.MouseEnter:Connect(function()
+										if check_binder_or_dropdown_active() then
+											if drd_button == dropdown_focus then --current focus dropdown (nextpage button)
+											else
+												return --another dropdown button is active
+											end
+										else -- no mode active (start dropdown mode)
+											current_selector = drd_button
+											highlight()
+										end
+									end)
+
+									drd_button_exit.MouseEnter:Connect(function()
+										current_selector = drd_button_exit
+										highlight()
+									end)
+
+									drd_button_exit.MouseButton1Click:Connect(function()
+
+										current_selector = drd_button
+										highlight()
+
+										dropdown_mode = false
+										dropdown_focus = nil
+										drd_button_exit.Visible = false
+										for _,v in pairs(drd_frame_table) do
+											v.Visible = false
+										end
+
+										drd_info.Text = '+'
+										drd_button.Text = drd_name
+										if drd_button.ZIndex > 5 then --check 1 but change 2 --focus mode end
+											drd_button.ZIndex -=5
+											drd_info.ZIndex -=5
+										end
+										TS(frame1, 0.25,{ZIndex = 0}, 1) --focus mode end
+									end)
+
+									drd_button.MouseButton1Click:Connect(function()
+										if check_binder_or_dropdown_active() then
+											if drd_button == dropdown_focus then --current focus dropdown (nextpage button)
+											else
+												return --another dropdown button is active
+											end
+										else -- no mode active (start dropdown mode)
+											current_selector = drd_button
+											highlight()
+										end
+
+										if not dropdown_mode then
+											dropdown_mode = true --dropdown mode
+											dropdown_focus = drd_button --focus in this dropdown
+											drd_button_exit.Visible = true
+											if drd_button.ZIndex < 5 then --check 1 but change 2 --focus mode start
+												drd_button.ZIndex +=5
+												drd_info.ZIndex +=5
+											end
+											TS(frame1, 0.25,{ZIndex = 5}, 1) --focus mode start
+										end
+
+										drd_getframe_forshow_func()
+										-- if #drd_frame_table > 1 then --if more than 1 page
+										-- 	drd_button.Text = ("Next ".. drd_getframe_forshow.. "/".. #drd_frame_table)
+										-- end
+										if #drd_frame_table > 1 then --if more than 1 page
+											drd_info.Text = (drd_getframe_forshow.. "/".. #drd_frame_table)
+										else
+											drd_info.Text = "..."
+										end
+
+										--print(drd_button.Position.Y.Offset - drd_button.Size.Y.Offset.. ' up')
+										--print(frame1.AbsoluteSize.Y - drd_button.Position.Y.Offset + drd_button.Size.Y.Offset..' down')
+
+
+										if drd_getframe_forshow == 1 then --if first button then hide the last page
+											drd_frame_table[#drd_frame_table].Visible = false
+										else -- hide the previous page
+											drd_frame_table[drd_getframe_forshow-1].Visible = false
+										end
+
+										drd_frame_table[drd_getframe_forshow].Visible = true
+
+										-- print('left ' .. drd_button.Position.X.Offset)
+										-- print('right ' .. frame1.AbsoluteSize.X - drd_button.Position.X.Offset)
+										-- print('up ' .. drd_button.Position.Y.Offset)
+										-- print('down ' .. frame1.AbsoluteSize.Y - drd_button.Position.Y.Offset)
+
+										--drd_callback(drd_button.Text) --return text
+									end)
+									drd_callback(drd_list_return) --return list
+	else
+		local drd_frame_table = {}
+		local drd_old_connect = {}
+		local drd_list_return = {}
+		local drd_old_active_button = {}
+		local drd_list_frame_above_or_below
+		local drd_list_button_active_single
+		local drd_maxbutton_page = 21
+		local drd_getframe_forshow = 1
+		local drd_x_distance_list_button = 0
+		local drd_list_frame_X = ((screen_X - 1010)-(screen_X - 1010)/2)-drd_button.AbsolutePosition.X
+		--formular for desired AbsolutePosition offset | Desired[offset] - Parent.AbsolutePosition.X
+		--Desired[offset] | ((screen_X - 1010)-(screen_X - 1010)/2)
+	
+	
+		local function drd_getbutton(x)
+			if x <= drd_maxbutton_page then --smaller than max button on screen
+				return x
+			else --greater max button on screen
+				repeat
+					x -= drd_maxbutton_page
+				until x  <= drd_maxbutton_page
+			return x
+			end
+		end
+	
+		local function drd_getframe_forshow_func()
+			for _,v in pairs(drd_frame_table) do
+				if v.Visible then
+					drd_getframe_forshow += 1 -- + 1 page if there a visible page
+					break
+				end
+			end
+	
+			if drd_getframe_forshow > #drd_frame_table then -- reset page
+				drd_getframe_forshow = 1
+			end
+		end
+		
+		local function drd_x_to_find_frame()
+			local x = #drd_frame_table * drd_maxbutton_page - #drd_list()
+			return x
+		end
+	
+		local function drd_fire_old_active_button()
+			table.clear(drd_old_active_button)
+			for _,v in pairs(drd_frame_table) do
+				for _,v2 in pairs(v:GetChildren()) do
+					for _,v3 in pairs(drd_list_return) do
+						if v2.Text == v3 then
+							table.insert(drd_old_active_button, v2)
+						end
+					end 
+				end 
+			end
+		end
+	
+		drd_button.MouseButton1Click:Connect(function()
+			if check_binder_or_dropdown_active() then
+				if drd_button == dropdown_focus then --current focus dropdown (nextpage button)
+				else
+					return --another dropdown button is active
+				end
+			else -- no mode active (start dropdown mode)
+	
+				drd_fire_old_active_button()
+				for _,v in pairs(drd_old_active_button) do -- turn off old active button (for animation and avoid bug)
+					firesignal(v.MouseButton1Click)
+				end
+	
+				current_selector = drd_button
+				highlight()
+	
+				if drd_x_to_find_frame() >= 0 and drd_x_to_find_frame() <= 20 then -- enough frame
+	
+				elseif drd_x_to_find_frame() <= -1 then -- lack of frame
+					repeat
+						local drd_frame = Instance.new'Frame'
+						drd_frame.Parent = drd_button
+						drd_frame.BackgroundColor3 = color46
+						drd_frame.Transparency = 1
+						drd_frame.BorderSizePixel = 0
+						--drd_frame.Position = UDim2.new(-5, 0, -11, 0) -- will be set below
+						drd_frame.Size = UDim2.new(1, 0, 1, 0) --doesn't matter this frame just for visible button inside (scale 1, 1 for easier placing button inside)
+						drd_frame.Visible = false
+						--drd_frame.ZIndex = 4
+	
+						table.clear(drd_frame_table)
+						for _,v in pairs(drd_button:GetChildren()) do
+							if v:IsA'Frame' then
+								table.insert(drd_frame_table, v)
+							end
+						end
+					until drd_x_to_find_frame() >= 0
+	
+				elseif drd_x_to_find_frame() >= 21 then -- more than enough frame
+					repeat
+						drd_frame_table[#drd_frame_table]:Destroy()
+						table.remove(drd_frame_table, #drd_frame_table)
+					until  drd_x_to_find_frame() <= 20
+	
+				end
+	
+				if (drd_button.Position.Y.Offset - drd_button.Size.Y.Offset + 120) >= (frame1.AbsoluteSize.Y - drd_button.Position.Y.Offset + drd_button.Size.Y.Offset) then-- +100 to make it more likely to go up
+					drd_list_frame_above_or_below = -4.5 --above --make it bigger so it move coorrectly on dropdown
+				else
+					drd_list_frame_above_or_below = 4.5 --below
+				end
+			
+				for _,v in pairs(drd_frame_table) do
+					v.Position = UDim2.new(0, drd_list_frame_X, 1 * drd_list_frame_above_or_below, 0)--Y_fixed up or down
+				end
+				--formular for desired AbsolutePosition offset ((Parent[AbsolutePosition] + Desired[offset]) -Whole screen[AbsoluteSize])
+				--Desired[offset]      ((screen_X - 1010)/2)
+	
+				local drd_list_allbutton = 0 -- 0 cuz we change it at the start
+				for _,v in pairs(drd_frame_table) do -- place enough buton in all frame																								
+					for _,v2 in pairs(v:GetChildren()) do
+						drd_list_allbutton += 1
+						if drd_list_allbutton > #drd_list() then
+							v2:Destroy()
+							drd_list_allbutton -= 1
+							break
+						end
+					end
+					if #v:GetChildren() < drd_maxbutton_page and drd_list_allbutton < #drd_list() then
+						repeat
+							drd_list_allbutton += 1
+							local drd_list_button = Instance.new'TextButton'
+							drd_list_button.Parent = v
+							drd_list_button.BackgroundColor3 = color45
+							drd_list_button.Transparency = 0.2
+							drd_list_button.BorderSizePixel = 0
+							--drd_list_button.Position = --this will be set below
+							drd_list_button.Size = UDim2.new(0, 110, 0, 35)
+							drd_list_button.Font = Enum.Font.GothamBlack
+							--drd_list_button.Text = tostring(v)
+							drd_list_button.TextColor3 = Color3.fromRGB(0, 0, 0)
+							drd_list_button.TextSize = 14
+							drd_list_button.ZIndex = 6 --set high as default cuz we gonna change visible of it's parent frame
+                            drd_list_button.TextTruncate = Enum.TextTruncate.AtEnd
+							drd_list_button:SetAttribute("detail", drd_detail) 
+						
+							local drd_list_button_frame = Instance.new'Frame'
+							drd_list_button_frame.Parent = drd_list_button
+							drd_list_button_frame.BackgroundColor3 = color46
+							drd_list_button_frame.Transparency = 0.15
+							drd_list_button_frame.BorderSizePixel = 0
+							drd_list_button_frame.Position = UDim2.new(-0.15, 0, -0.2, 0)
+							drd_list_button_frame.Size = UDim2.new(0.9, 0, 0.9, 0)
+							drd_list_button_frame.ZIndex = 5 --set high as default cuz we gonna change visible of it's parent frame
+						
+							local drd_list_button_frame2 = Instance.new'Frame'
+							drd_list_button_frame2.Parent = drd_list_button_frame
+							drd_list_button_frame2.BackgroundColor3 = color45
+							drd_list_button_frame2.Transparency = 0.6
+							drd_list_button_frame2.BorderSizePixel = 0
+							drd_list_button_frame2.Position = UDim2.new(0, 0, 0, 0)
+							drd_list_button_frame2.Size = UDim2.new(0, 0, 0, 0)
+							drd_list_button_frame2.ZIndex = 5 --set high as default cuz we gonna change visible of it's parent frame
+	
+						until #v:GetChildren() == drd_maxbutton_page or drd_list_allbutton == #drd_list()
+					end
+				end
+				
+	
+				for _,v3 in pairs(drd_old_connect) do
+					v3:Disconnect()
+				end
+				table.clear(drd_old_connect)
+	
+				local drd_list_set = 1 -- 1 cuz we change it at the end -- this will change to set position
+				local drd_x_distance_list_button_temp = 0
+				for _,v in pairs(drd_frame_table) do
+					for i2,v2 in pairs(v:GetChildren()) do
+						local drd_list_buttton_animation = v2.Frame.Frame
+						local drd_number_for_list = drd_list_set		-- this will not change save it as a number to each button
+						v2.Text = tostring(drd_list()[drd_list_set])
+	
+						local drd_old_mouse_enter
+						drd_old_mouse_enter = v2.MouseEnter:Connect(function()
+							current_selector = v2
+							highlight()
+						end)
+						table.insert(drd_old_connect, drd_old_mouse_enter)
+					
+						local tf = false
+						local drd_old_mouse_click
+						drd_old_mouse_click = v2.MouseButton1Click:Connect(function()
+							tf = not tf
+							if drd_style == 'single' then --single select
+								if current_selector == v2 then --highlight this button when false but not by the firesignal above
+									highlight()
+								end
+	
+								if tf then
+									if drd_list_button_active_single ~= nil then -- other button is active
+										firesignal(drd_list_button_active_single.MouseButton1Click) -- trigger tf(false) of that button
+									end
+									
+									table.clear(drd_list_return) --empty list
+									drd_list_return[1] = v2.Text --add this button name to return
+									drd_list_button_active_single = v2 --active button
+									TS(drd_list_buttton_animation, 0.2, {Size = UDim2.new(1, 0, 1, 0)}, 1)
+								else
+									table.clear(drd_list_return)--empty list, will trigger by firesignal above
+									drd_list_button_active_single = nil --no actice button
+									TS(drd_list_buttton_animation, 0.2, {Size = UDim2.new(0, 0, 0, 0)}, 1)
+								end
+							else --multi slect
+								if current_selector == v2 then --highlight this button when false but not by the firesignal above
+									highlight()
+								end
+	
+								if tf then
+									table.insert(drd_list_return, v2.Text) --add this button's name to list
+									TS(drd_list_buttton_animation, 0.2, {Size = UDim2.new(1, 0, 1, 0)}, 1)
+								else
+									for i3,v3 in pairs(drd_list_return) do
+										--if v3 == drd_list()[drd_number_for_list] then --remove this button's name from list -- check for game's instance(error if disappear)
+										if v3 == v2.Text then --remove this button's name from list -- check for button
+											table.remove(drd_list_return, i3)
+										end
+									end
+									TS(drd_list_buttton_animation, 0.2, {Size = UDim2.new(0, 0, 0, 0)}, 1)
+								end
+							end
+							drd_callback(drd_list_return) --return list
+						end)
+						table.insert(drd_old_connect, drd_old_mouse_click)
+	
+						if drd_getbutton(drd_list_set) < 7 then
+							v2.Position = UDim2.new(0, drd_x_distance_list_button_temp, 0, 0) --Y first line(frame)
+							drd_x_distance_list_button_temp += 150
+						elseif drd_getbutton(drd_list_set) == 7 then
+							v2.Position = UDim2.new(0, drd_x_distance_list_button_temp, 0, 0)
+							drd_x_distance_list_button_temp = drd_x_distance_list_button --reset(newline)
+						elseif drd_getbutton(drd_list_set) < 14 then
+							v2.Position = UDim2.new(0, drd_x_distance_list_button_temp, drd_list_frame_above_or_below/2, 0) --Y scale second line
+							drd_x_distance_list_button_temp += 150
+						elseif drd_getbutton(drd_list_set) == 14 then
+							v2.Position = UDim2.new(0, drd_x_distance_list_button_temp, drd_list_frame_above_or_below/2, 0)
+							drd_x_distance_list_button_temp = drd_x_distance_list_button --reset(newline)
+						elseif drd_getbutton(drd_list_set) < 21 then
+							v2.Position = UDim2.new(0, drd_x_distance_list_button_temp, (drd_list_frame_above_or_below * 2)/2, 0) --Y scale third line
+							drd_x_distance_list_button_temp += 150
+						elseif drd_getbutton(drd_list_set) == 21 then
+							v2.Position = UDim2.new(0, drd_x_distance_list_button_temp, (drd_list_frame_above_or_below * 2)/2, 0)
+							drd_x_distance_list_button_temp = drd_x_distance_list_button --reset(newline)
+						end
+						drd_list_set += 1
+					end
+				end
+	
+				for _,v in pairs(drd_old_active_button) do -- turn on old active button
+					for _,v2 in pairs(drd_frame_table) do
+						for _,v3 in pairs(v2:GetChildren()) do
+							if v.Text == v3.Text then
+								firesignal(v.MouseButton1Click)
+							end
+						end
+					end
+				end
+			end
+	
+			if not dropdown_mode then
+				dropdown_mode = true --dropdown mode
+				dropdown_focus = drd_button --focus in this dropdown
+				drd_button_exit.Visible = true
+				drd_info.Text = '...'
+				if drd_button.ZIndex < 5 then --check 1 but change 2 --focus mode start
+					drd_button.ZIndex +=5
+					drd_info.ZIndex +=5
+				end
+				TS(frame1, 0.25,{ZIndex = 5}, 1) --focus mode start
+			end
+	
+			drd_getframe_forshow_func()
+			-- if #drd_frame_table > 1 then --if more than 1 page
+			-- 	drd_button.Text = ("Next ".. drd_getframe_forshow.. "/".. #drd_frame_table)
+			-- end
+			if #drd_frame_table > 1 then --if more than 1 page
+				drd_info.Text = (drd_getframe_forshow.. "/".. #drd_frame_table)
+			else
+				drd_info.Text = "..."
+			end
+
+			--print(drd_button.Position.Y.Offset - drd_button.Size.Y.Offset.. ' up')
+			--print(frame1.AbsoluteSize.Y - drd_button.Position.Y.Offset + drd_button.Size.Y.Offset..' down')
+	
+			if drd_getframe_forshow == 1 then --if first button then hide the last page
+				drd_frame_table[#drd_frame_table].Visible = false
+			else -- hide the previous page
+				drd_frame_table[drd_getframe_forshow-1].Visible = false
+			end
+	
+			drd_frame_table[drd_getframe_forshow].Visible = true
+	
+			-- print('left ' .. drd_button.Position.X.Offset)
+			-- print('right ' .. frame1.AbsoluteSize.X - drd_button.Position.X.Offset)
+			-- print('up ' .. drd_button.Position.Y.Offset)
+			-- print('down ' .. frame1.AbsoluteSize.Y - drd_button.Position.Y.Offset)
+	
+			--drd_callback(drd_button.Text) --return text
+		end)
+	
+		drd_button.MouseEnter:Connect(function()
+			if check_binder_or_dropdown_active() then
+				if drd_button == dropdown_focus then --current focus dropdown (nextpage button)
+				else
+					return --another dropdown button is active
+				end
+			else -- no mode active (start dropdown mode)
+				current_selector = drd_button
+				highlight()
+			end
+		end)
+	
+		drd_button_exit.MouseEnter:Connect(function()
+			current_selector = drd_button_exit
+			highlight()
+		end)
+	
+		drd_button_exit.MouseButton1Click:Connect(function()
+	
+			current_selector = drd_button
+			highlight()
+	
+			dropdown_mode = false
+			dropdown_focus = nil
+			drd_button_exit.Visible = false
+			for _,v in pairs(drd_frame_table) do
+				v.Visible = false
+			end
+	
+			drd_info.Text = '+'
+			drd_button.Text = drd_name
+			if drd_button.ZIndex > 5 then --check 1 but change 2 --focus mode end
+				drd_button.ZIndex -=5
+				drd_info.ZIndex -=5
+			end
+			TS(frame1, 0.25,{ZIndex = 0}, 1) --focus mode end
+		end)
+	
+		drd_callback(drd_list_return) --return list
+	end
+end
+--------------------------------------------------------------------------------------------
+
+local function first_highlight()
+	if current_selector == nil then -- first highlight -- only need to run once but it need run after all button call
+		for _,v in pairs(all_button()) do 
+			if v.AbsolutePosition.X < max then
+				max = v.AbsolutePosition.X
+				current_selector = v
+				highlight()
+			end
+		end
+		reset_xytemp()
+	end
+end
+
+UIS.InputBegan:Connect(function(x)
+	if x.KeyCode == gui44 then
+		if getgenv().gui_open44 == "press" then -- press
+
+			if not frame1.Visible then
+				UI_input = UIS.InputEnded:Connect(function(x2)
+					if x2.KeyCode == up44 or x2.KeyCode == up45 then -- inside gui input
+						keymove'up'
+					elseif x2.KeyCode == down44 or x2.KeyCode == down45 then
+						keymove'down'
+					elseif x2.KeyCode == right44 or x2.KeyCode == right45 then
+						keymove'right'
+					elseif x2.KeyCode == left44 or x2.KeyCode == left45 then
+						keymove'left'
+					elseif x2.KeyCode == select44 then
+						keymove'Enter'
+					end
+				end)
+				frame1.Visible = true
+				frame2.Visible = true
+				--screen.Enabled = true
+				TS(frame1, 0.2, {Transparency = 0.3}, 1)
+			else
+				frame1.Visible = false
+				frame2.Visible = false
+				--screen.Enabled = false
+				TS(frame1, 0.2, {Transparency = 1}, 1)
+				UI_input:Disconnect()
+			end
+			first_highlight()
+		else	  			 	 	 	-- hold
+
+			UI_input = UIS.InputEnded:Connect(function(x2) -- released hold check / close gui
+				if x2.KeyCode == gui44 then
+					frame1.Visible = false
+					frame2.Visible = false
+					--screen.Enabled = false
+					frame1.Transparency = 1
+					UI_input:Disconnect()
+				elseif x2.KeyCode == up44 or x2.KeyCode == up45 then -- inside gui input
+					keymove'up'
+				elseif x2.KeyCode == down44 or x2.KeyCode == down45 then
+					keymove'down'
+				elseif x2.KeyCode == right44 or x2.KeyCode == right45 then
+					keymove'right'
+				elseif x2.KeyCode == left44 or x2.KeyCode == left45 then
+					keymove'left'
+				elseif x2.KeyCode == select44 then
+					keymove'Enter'
+				end
+			end)
+			first_highlight()
+			task.wait(.12) -- hold check / open gui
+			if hold() then task.wait(.12)
+				if hold() then
+					frame1.Visible = true
+					frame2.Visible = true
+					--screen.Enabled = true
+					TS(frame1, 0.2, {Transparency = 0.3}, 1)
+				end
+			end
+		end
+	end
+end)
+--------------------------------------------------------------------------------------------
+-- X - X 170 pixel, Y - Y 100 pixel
+getgenv().acs = 1
+
+button("button1sssssssssssssssssssssssss", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 250, 0, 250), 
+	function() getgenv().acs += 1 noti('Auto'.. getgenv().acs) end)	
+
+button("button2", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 250, 0, 350), 
+	function() print('button2') end)
+
+button("button3", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 250, 0, 450), 
+	function() print('button3') end)
+--------------------------------------------
+
+toggle("toggle11111111111111111111111111111", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 1050, 0, 250), 
+	function(x) getgenv().bool1 = x while bool1 do task.wait(.5) print("A") end end)
+
+toggle("toggle2", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 1050, 0, 350), 
+	function(x) getgenv().bool2 = x while bool2 do task.wait(.5) print("AA") end end)
+
+toggle("toggle3", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 1050, 0, 450), 
+	function(x) getgenv().bool3 = x while bool3 do task.wait(.5) print("AAA") end end)	
+
+toggle("toggle1", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 1220, 0, 250), 
+	function(x) getgenv().bool4 = x while bool4 do task.wait(.5) print("AAAA") end end)
+
+toggle("toggle2", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 1220, 0, 350), 
+	function(x) getgenv().bool5 = x while bool5 do task.wait(.5) print("AAAAA") end end)
+
+toggle("toggle3", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 1220, 0, 450), 
+	function(x) getgenv().bool6 = x while bool6 do task.wait(.5) print("AAAAAA") end end)
+--------------------------------------------
+
+slider("walk speed11111111111111111111111111111111", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 250, 0, 600),
+	16, 100, 50, 
+	function(x)  end)
+
+slider("slider2", 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 1050, 0, 600),
+	16, 167, 50, 
+	function(x) print(x) end)
+--------------------------------------------
+binder('Binder111111111111111111111111111111111', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 500, 0, 250),
+	Enum.KeyCode.L, function() noti"test" end)
+
+binder('Binder2', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 500, 0, 350),
+	Enum.KeyCode.L, function() print'Binder2'end)
+
+binder('Binder3', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 500, 0, 450), 
+	Enum.KeyCode.L, function() print'Binder3'end)
+
+--------------------------------------------
+-- dropdown('Wood',
+-- 	UDim2.new(0, 500, 0, 150),
+-- 	game.Players:GetChildren(), function(x) getgenv().dropdown1 = x end)
+
+-- dropdown(' Wood',
+-- 	UDim2.new(0, 800, 0, 150),
+-- 	{"ha 123c2", "kik2'sd2","     1w;s"}, function(x) getgenv().dropdown2 = x end)
+
+dropdown2('Woodggggggggggggggggggggggggggggg', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 600, 0, 600), 'multi', 'static',
+	{'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','1ddddddddddddddddddddddddddddddddddd9','20','21','22','23','24','25'}, function(x) getgenv().dropdown1 = x end)
+		--test here
+		spawn(function()
+			while task.wait(.5) do
+				for _,v in pairs(getgenv().dropdown1) do
+					print(v)
+				end
+			end
+		end)
+
+dropdown2('Wood', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+	UDim2.new(0, 800, 0, 420), 'single', 'dynamic',--430 up -- 420 down (neat)
+	function() return game.Players:GetChildren() end, function(x) getgenv().dropdown2 = x end)
+		--test here
+		spawn(function()
+			while task.wait(.5) do
+				for _,v in pairs(getgenv().dropdown2) do
+					print(v)
+				end
+			end
+		end)
+--------------------------------------------
+--Y - Y 16 pixel
+text("Auto farm v3 - fix", UDim2.new(0.045, 0, 0.85, 0), 18)
+--text("Support Mouse and Keyboard \nWASD, Arrows key, E to slect", UDim2.new(0.045, 0, 0.92, 0), 15)
+--text("WASD, Arrows key, E to slect", UDim2.new(0, 70, 0, 786), 15)
+----------------------------------------------
+
+line(UDim2.new(0,0,0,36), UDim2.new(1,0,0,3)) -- position, size
+line(UDim2.new(0,0,0,228), UDim2.new(0,480,0,3))
+
+--------------------
+
+--line(UDim2.new(0, 100, 0, 780), UDim2.new(0, 200, 0, 2))
+--line(UDim2.new(0, 500, 0, 780), UDim2.new(0, 500, 0, 2))
+
+-- everithing working!
+-- tidyup code , universal delay	
+-- local gui = ... -- some GUI
+-- local desiredAbsolutePosition = -- some Vector2
+-- local relativePosition = desiredAbsolutePosition - gui.Parent.AbsolutePosition
+-- gui.Position = UDim2.fromOffset(relativePosition.X, relativePosition.Y)
+
+--add check for binder_mode and dropdow_nmode when button1press on binder and dropdown  
+--slider keyboard input settup when highlight?
+--instead of check for button1click check for highlight?
+
+--Done can't press other button when on Focus mode
+
+--Done check before highlight
+--Done use other method for single dropdown
+
+--Done fix notification table
+--Done change TS() add TYPE 1, 2
+--Done change how highlight work (no tween conflict(TS TYPE 2))
+--Done add highlight() on press button using mouse
+--Done new notification
+--Done highlight on press for drd_list_button
+--fix togggle callback or spawn(function()) like drd ?
+--remove all instance's name -- ready for random strring name ?
+--Done changed font
+--Done math.floor for slider keyboard capture
+--Done press mode and hold mode for start gui
+--Done replace check for screen enabled with frame1 visible (notification)
+--Done small fix so when gui clsoed binder actives won't register new key
+--Done change all function to local function
+-- if local function can another local function the one being call second have to declair first
+-- imagine if something call a local function it will search for the previous code (from the line being call going up)
+--Done small fix on drd_button (highlight on start dropdown mode)
+--Done small change at line 688 ()== false) to (until not)
+--need working on dynamic dropdown
+--Done Dynamic dropdown(string output), fix highlight drd_list_button(tf), reset on close and open button
+-- small fix at drd_list_frame position (up or down) (+100 line 892)
+--Done 
+--Log button ?
+--small change RichText(under line)
+--small change Next button in drd, Enum.Font.GothamBlack for Text()
+--some change at drd list frame set position(above or below), 100 - 120,  change background transparency to 0.3 
+--TextTruncate for all name's Text, resize textlabel and textsize of slider name's Text
+--fixed drd_list_frame_X, above_or_below to 4.5
+-- v51 working on true/false option input also setting using {}

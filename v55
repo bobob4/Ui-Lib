@@ -1,4 +1,4 @@
---loadstring(game:HttpGet'https://gist.githubusercontent.com/bobb52/08f6c646a71a0e606aaec8d2370b8a34/raw/09bcd68193803f74a81ff3f8480f46f800054eb0/ui%2520lib',true)()
+--loadstring(game:HttpGet'https://raw.githubusercontent.com/bobob4/Ui-Lib/main/v55',true)()
 pcall(function()
 	game:GetService("CoreGui").ramGui:remove()
 	task.wait(2)
@@ -1607,7 +1607,7 @@ binder('Binder3', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplace
 -- 	UDim2.new(0, 800, 0, 150),
 -- 	{"ha 123c2", "kik2'sd2","     1w;s"}, function(x) getgenv().dropdown2 = x end)
 
-dropdown2('Woodggggggggggggggggggggggggggggg', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+dropdown2('Woodggggggggggggggggggggggggggggg', 'multi select\nstatic dropdown',
 	UDim2.new(0, 600, 0, 600), 'multi', 'static',
 	{'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','1ddddddddddddddddddddddddddddddddddd9','20','21','22','23','24','25'}, function(x) getgenv().dropdown1 = x end)
 		--test here
@@ -1619,7 +1619,7 @@ dropdown2('Woodggggggggggggggggggggggggggggg', 'placeholder1\nplaceholder1\nplac
 			end
 		end)
 
-dropdown2('Wood', 'placeholder1\nplaceholder1\nplaceholder1\nplaceholder1\nplaceholder1',
+dropdown2('Wood', 'single select \ndynamic dropdown',
 	UDim2.new(0, 800, 0, 420), 'single', 'dynamic',--430 up -- 420 down (neat)
 	function() return game.Players:GetChildren() end, function(x) getgenv().dropdown2 = x end)
 		--test here

@@ -1,4 +1,5 @@
---loadstring(game:HttpGet'https://raw.githubusercontent.com/bobob4/Ui-Lib/main/v55',true)()
+--loadstring(game:HttpGet('https://raw.githubusercontent.com/ubob7/Ui-Lib/main/v55'))()
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/ubob7/Ui-Lib/main/v55", true))()
 repeat task.wait() until game:IsLoaded() task.wait()
 if getgenv().ScreenShift then
 	return noti("Gui already loaded")
@@ -173,7 +174,7 @@ highlight_vertical.Transparency = 0
 highlight_vertical.BorderSizePixel = 0
 highlight_vertical.ZIndex = 10
 
-local function TS(object, times, tweeninfo, type)
+function TS(object, times, tweeninfo, type)
 	if type == 1 then -- casual tween
 		TweenService:Create(object, TweenInfo.new(times), tweeninfo):Play()
 	else -- have to :Play() and :Cancel() but avoid conflict tween
@@ -181,11 +182,11 @@ local function TS(object, times, tweeninfo, type)
 	end
 end
 
-local function hold()
+function hold()
 	return UIS:IsKeyDown(gui44)
 end
 
-local function all_button()
+function all_button()
 	if dropdown_mode then
 		for _,v in pairs(dropdown_focus:GetChildren()) do
 			if v:IsA'Frame' and v.Visible then
@@ -204,7 +205,7 @@ local function all_button()
 	return frame1:GetChildren()
 end
 
-local function highlight()
+function highlight()
 	-- if current_selector.Parent.Name == 'ScrollingFrame' then -- if interact with dropdown's button
 	-- 	if current_selector.Parent.Visible then -- if choosing
 	-- 		local a = current_selector.Parent.AbsolutePosition.Y --get min
@@ -251,7 +252,7 @@ local function highlight()
 	--highlight_vertical_tween_conflict_avoid:Play()
 end
 
-local function check_binder_or_dropdown_or_textbox_active()
+function check_binder_or_dropdown_or_textbox_active()
 	if binder_mode then
 		--current_selector = binder_focus -- might annoying while moving about background button
 		highlight()
@@ -277,11 +278,11 @@ end
 -- 	end
 -- end
 
-local function reset_xytemp()
+function reset_xytemp()
 	min, max = 0, 20000
 end
 
-local function keymove(direction)
+function keymove(direction)
 	if binder_mode then -- if interact with binder or textbox focus on it --still need this piece not clean at all
 		current_selector = binder_focus
 		return highlight()
@@ -325,7 +326,7 @@ local function keymove(direction)
 			current_selector:CaptureFocus()
 		else
 		--elseif check_binder_or_dropdown_or_textbox_active() == false then
-		--	return --highlight in check mode_drd n mode_bin local function so  return
+		--	return --highlight in check mode_drd n mode_bin function so  return
 		--elseif check_binder_or_dropdown_or_textbox_active() then
 			return firesignal(current_selector.MouseButton1Click)
 		end
@@ -334,7 +335,7 @@ local function keymove(direction)
 	reset_xytemp()
 end
 
-local function text(txt, position, size)
+function text(txt, position, size)
 	local text = Instance.new'TextLabel'
 	text.Parent = frame2
 	text.BackgroundColor3 = color36
@@ -351,7 +352,7 @@ local function text(txt, position, size)
 	text.RichText = true
 end
 
-local function line(lie_position, lie_size)
+function line(lie_position, lie_size)
 	local lie_frame = Instance.new'Frame'
 	lie_frame.Parent = frame2
 	lie_frame.BackgroundColor3 = color37
@@ -425,7 +426,7 @@ function noti(not_detail)
 	end)
 end
 
-local function button(btn_name, btn_detail, btn_position, btn_callback)
+function button(btn_name, btn_detail, btn_position, btn_callback)
 	local button = Instance.new'TextButton'
 	button.Parent = frame1
 	button.BackgroundColor3 = color36
@@ -462,7 +463,7 @@ local function button(btn_name, btn_detail, btn_position, btn_callback)
 	end)
 end
 
-local function toggle(tog_name, tog_detail, tog_status, tog_position, tog_callback) 
+function toggle(tog_name, tog_detail, tog_status, tog_position, tog_callback) 
 	local tog_button = Instance.new'TextButton'
 	tog_button.Parent = frame1
 	tog_button.BackgroundColor3 = color36
@@ -526,7 +527,7 @@ local function toggle(tog_name, tog_detail, tog_status, tog_position, tog_callba
 	tog_callback(tog_status)
 end
 
-local function box(box_name, box_detail, box_position, box_callback)
+function box(box_name, box_detail, box_position, box_callback)
 	local box_button = Instance.new"TextBox"
 	box_button.Parent = frame1
 	box_button.BackgroundColor3 = color36
@@ -607,7 +608,7 @@ local function box(box_name, box_detail, box_position, box_callback)
 	--captuurefocus on keymove to start focus on press E?
 end
 
-local function binder(bin_name, bin_detail, bin_position, bin_key, bin_callback)
+function binder(bin_name, bin_detail, bin_position, bin_key, bin_callback)
 	local bin_button = Instance.new'TextButton'
 	bin_button.Parent = frame1
 	bin_button.BackgroundColor3 = color36
@@ -699,7 +700,7 @@ local function binder(bin_name, bin_detail, bin_position, bin_key, bin_callback)
 	end)
 end
 
-local function slider(sli_name, sli_detail, sli_position, sli_min, sli_max, sli_input_default, sli_callback)
+function slider(sli_name, sli_detail, sli_position, sli_min, sli_max, sli_input_default, sli_callback)
 	local sli_button = Instance.new'TextButton'
 	sli_button.Parent = frame1
 	sli_button.BackgroundColor3 = color36
@@ -815,7 +816,7 @@ local function slider(sli_name, sli_detail, sli_position, sli_min, sli_max, sli_
 	end)
 end
 
--- local function dropdown(drd_name, drd_position, drd_list, drd_callback) --return string within list
+-- function dropdown(drd_name, drd_position, drd_list, drd_callback) --return string within list
 -- 	local drd_button = Instance.new'TextButton'
 -- 	drd_button.Parent = frame1
 -- 	drd_button.BackgroundColor3 = color37
@@ -857,7 +858,7 @@ end
 -- 	drd_scroll.ScrollBarImageTransparency = 0
 -- 	drd_scroll.ZIndex = 4
 
--- 	local function change_dropdown_icon() -- local function so it work for multi dropdown
+-- 	function change_dropdown_icon() -- function so it work for multi dropdown
 -- 		if drd_scroll.Visible == false then 
 -- 			drd_info.Text = '+'
 -- 			TS(frame1, 0.25,{ZIndex = 0})
@@ -910,7 +911,7 @@ end
 -- 	drd_callback(drd_button.Text) --return text
 -- end
 
-local function dropdown2(drd_name, drd_detail, drd_position, drd_target, drd_datatype, drd_list, drd_callback) --return string within list
+function dropdown2(drd_name, drd_detail, drd_position, drd_target, drd_datatype, drd_list, drd_callback) --return string within list
 	local drd_button = Instance.new'TextButton'
 	drd_button.Parent = frame1
 	drd_button.BackgroundColor3 = color36
@@ -1630,7 +1631,7 @@ local function dropdown2(drd_name, drd_detail, drd_position, drd_target, drd_dat
 end
 --------------------------------------------------------------------------------------------
 
-local function first_highlight()
+function first_highlight()
 	if current_selector == nil then -- first highlight -- only need to run once but it need run after all button call
 		for _,v in pairs(all_button()) do 
 			if v.AbsolutePosition.X < max then
@@ -1903,6 +1904,7 @@ line(UDim2.new(0,0,0.26,0), UDim2.new(0.30,0,0,3))
 -- DONE small change at multi target check for true/alse that help default true/false work rights
 -- DONE fixed update_list()
 
+-- maake loadstring noti work
 -- use all table no array????
 -- DONE default true/false -> work on others type of drd_button -> ready for save
 -- OPTIMISE singe/multi, /static/dynamic, table/dictionary

@@ -173,7 +173,7 @@ highlight_vertical.Transparency = 0
 highlight_vertical.BorderSizePixel = 0
 highlight_vertical.ZIndex = 10
 
-function TS(object, times, tweeninfo, type)
+local function TS(object, times, tweeninfo, type)
 	if type == 1 then -- casual tween
 		TweenService:Create(object, TweenInfo.new(times), tweeninfo):Play()
 	else -- have to :Play() and :Cancel() but avoid conflict tween
@@ -181,11 +181,11 @@ function TS(object, times, tweeninfo, type)
 	end
 end
 
-function hold()
+local function hold()
 	return UIS:IsKeyDown(gui44)
 end
 
-function all_button()
+local function all_button()
 	if dropdown_mode then
 		for _,v in pairs(dropdown_focus:GetChildren()) do
 			if v:IsA'Frame' and v.Visible then
@@ -204,7 +204,7 @@ function all_button()
 	return frame1:GetChildren()
 end
 
-function highlight()
+local function highlight()
 	-- if current_selector.Parent.Name == 'ScrollingFrame' then -- if interact with dropdown's button
 	-- 	if current_selector.Parent.Visible then -- if choosing
 	-- 		local a = current_selector.Parent.AbsolutePosition.Y --get min
@@ -251,7 +251,7 @@ function highlight()
 	--highlight_vertical_tween_conflict_avoid:Play()
 end
 
-function check_binder_or_dropdown_or_textbox_active()
+local function check_binder_or_dropdown_or_textbox_active()
 	if binder_mode then
 		--current_selector = binder_focus -- might annoying while moving about background button
 		highlight()
@@ -270,18 +270,18 @@ function check_binder_or_dropdown_or_textbox_active()
 	return false
 end
 
--- function check_to_select()
+-- local function check_to_select()
 -- 	if check_binder_or_dropdown_or_textbox_active() then
 -- 		return false
 -- 	else return true
 -- 	end
 -- end
 
-function reset_xytemp()
+local function reset_xytemp()
 	min, max = 0, 20000
 end
 
-function keymove(direction)
+local function keymove(direction)
 	if binder_mode then -- if interact with binder or textbox focus on it --still need this piece not clean at all
 		current_selector = binder_focus
 		return highlight()
@@ -334,7 +334,7 @@ function keymove(direction)
 	reset_xytemp()
 end
 
-function text(txt, position, size)
+local function text(txt, position, size)
 	local text = Instance.new'TextLabel'
 	text.Parent = frame2
 	text.BackgroundColor3 = color36
@@ -351,7 +351,7 @@ function text(txt, position, size)
 	text.RichText = true
 end
 
-function line(lie_position, lie_size)
+local function line(lie_position, lie_size)
 	local lie_frame = Instance.new'Frame'
 	lie_frame.Parent = frame2
 	lie_frame.BackgroundColor3 = color37
@@ -362,7 +362,7 @@ function line(lie_position, lie_size)
 	lie_frame.ZIndex = 10
 end
 
-function noti(not_detail)
+local function noti(not_detail)
 	local not_frame1 = Instance.new'Frame'
 	not_frame1.Parent = frame3
 	not_frame1.BackgroundColor3 = color34
@@ -425,7 +425,7 @@ function noti(not_detail)
 	end)
 end
 
-function button(btn_name, btn_detail, btn_position, btn_callback)
+local function button(btn_name, btn_detail, btn_position, btn_callback)
 	local button = Instance.new'TextButton'
 	button.Parent = frame1
 	button.BackgroundColor3 = color36
@@ -462,7 +462,7 @@ function button(btn_name, btn_detail, btn_position, btn_callback)
 	end)
 end
 
-function toggle(tog_name, tog_detail, tog_status, tog_position, tog_callback) 
+local function toggle(tog_name, tog_detail, tog_status, tog_position, tog_callback) 
 	local tog_button = Instance.new'TextButton'
 	tog_button.Parent = frame1
 	tog_button.BackgroundColor3 = color36
@@ -526,7 +526,7 @@ function toggle(tog_name, tog_detail, tog_status, tog_position, tog_callback)
 	tog_callback(tog_status)
 end
 
-function box(box_name, box_detail, box_position, box_callback)
+local function box(box_name, box_detail, box_position, box_callback)
 	local box_button = Instance.new"TextBox"
 	box_button.Parent = frame1
 	box_button.BackgroundColor3 = color36
@@ -607,7 +607,7 @@ function box(box_name, box_detail, box_position, box_callback)
 	--captuurefocus on keymove to start focus on press E?
 end
 
-function binder(bin_name, bin_detail, bin_position, bin_key, bin_callback)
+local function binder(bin_name, bin_detail, bin_position, bin_key, bin_callback)
 	local bin_button = Instance.new'TextButton'
 	bin_button.Parent = frame1
 	bin_button.BackgroundColor3 = color36
@@ -699,7 +699,7 @@ function binder(bin_name, bin_detail, bin_position, bin_key, bin_callback)
 	end)
 end
 
-function slider(sli_name, sli_detail, sli_position, sli_min, sli_max, sli_input_default, sli_callback)
+local function slider(sli_name, sli_detail, sli_position, sli_min, sli_max, sli_input_default, sli_callback)
 	local sli_button = Instance.new'TextButton'
 	sli_button.Parent = frame1
 	sli_button.BackgroundColor3 = color36
@@ -815,7 +815,7 @@ function slider(sli_name, sli_detail, sli_position, sli_min, sli_max, sli_input_
 	end)
 end
 
--- function dropdown(drd_name, drd_position, drd_list, drd_callback) --return string within list
+-- local function dropdown(drd_name, drd_position, drd_list, drd_callback) --return string within list
 -- 	local drd_button = Instance.new'TextButton'
 -- 	drd_button.Parent = frame1
 -- 	drd_button.BackgroundColor3 = color37
@@ -857,7 +857,7 @@ end
 -- 	drd_scroll.ScrollBarImageTransparency = 0
 -- 	drd_scroll.ZIndex = 4
 
--- 	function change_dropdown_icon() -- function so it work for multi dropdown
+-- 	local function change_dropdown_icon() -- function so it work for multi dropdown
 -- 		if drd_scroll.Visible == false then 
 -- 			drd_info.Text = '+'
 -- 			TS(frame1, 0.25,{ZIndex = 0})
@@ -910,7 +910,7 @@ end
 -- 	drd_callback(drd_button.Text) --return text
 -- end
 
-function dropdown2(drd_name, drd_detail, drd_position, drd_target, drd_datatype, drd_list, drd_callback) --return string within list
+local function dropdown2(drd_name, drd_detail, drd_position, drd_target, drd_datatype, drd_list, drd_callback) --return string within list
 	local drd_button = Instance.new'TextButton'
 	drd_button.Parent = frame1
 	drd_button.BackgroundColor3 = color36
@@ -1630,7 +1630,7 @@ function dropdown2(drd_name, drd_detail, drd_position, drd_target, drd_datatype,
 end
 --------------------------------------------------------------------------------------------
 
-function first_highlight()
+local function first_highlight()
 	if current_selector == nil then -- first highlight -- only need to run once but it need run after all button call
 		for _,v in pairs(all_button()) do 
 			if v.AbsolutePosition.X < max then
